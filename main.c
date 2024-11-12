@@ -1,28 +1,14 @@
-#include <stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-size_t syscall(size_t num, size_t a0, size_t a1, size_t a2, size_t a3, size_t a4, size_t a5)
+int main()
 {
-	size_t result = 0;
-	asm volatile("mov %1, %%rax;"
-				 "mov %2, %%rdi;"
-				 "mov %3, %%rsi;"
-				 "mov %4, %%rdx;"
-				 "mov %5, %%r8;"
-				 "mov %6, %%r10;"
-				 "mov %7, %%r9;"
-				 "syscall;"
-				 "mov %%rax, %0"
-				 : "=m"(result)
-				 : "g"(num), "g"(a0), "g"(a1), "g"(a2), "g"(a3), "g"(a4), "g"(a5)
-				 : "rax", "rdi", "rsi", "rdx", "r8", "r10", "r9", "rcx", "r11", "memory");
-	return result;
-}
+	printf("Hello, world!\n");
+	FILE* f = fopen("/etc/motd", "r");
+	char* buf = malloc(128);
+	fread(buf, sizeof(char), 128, f);
+	printf("MOTD: %s\n", buf);
+	fclose(f);
 
-static const char hello[] = "Hello World!\n";
-
-void _start()
-{
-	syscall(6, 1, (size_t)hello, 13, 0, 0, 0);
-	for (;;)
-		;
+	return 0;
 }
